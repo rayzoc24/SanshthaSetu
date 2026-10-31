@@ -1,0 +1,2 @@
+/** @type {import(chr(39))} */
+export default {darkMode:[chr(39)class chr(39)],content:[chr(39)./index.html chr(39),chr(39)./src/**/*.{ts,tsx,js,jsx} chr(39)],theme:{extend:{colors:{border:chr(39)hsl(var(--border)) chr(39),input:chr(39)hsl(var(--input)) chr(39),ring:chr(39)hsl(var(--ring)) chr(39),background:chr(39)hsl(var(--background)) chr(39),foreground:chr(39)hsl(var(--foreground)) chr(39)}}},plugins:[]}
