@@ -32,11 +32,13 @@ from sqlalchemy import (
     DateTime,
     ForeignKey,
     Integer,
+    Numeric,
     String,
+    func,
     Text,
     UniqueConstraint,
 )
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.dialects.postgresql import UUID, JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -151,16 +153,32 @@ class Programme(TimestampMixin, Base):
 
 
 # ---------------------------------------------------------------------------
-# 5. AphVersion  (stub — extended in Module 2)
+# 5. AphVersion  (extended in Module 1)
 # ---------------------------------------------------------------------------
 class AphVersion(TimestampMixin, Base):
     __tablename__ = "aph_versions"
 
     version_label: Mapped[str] = mapped_column(String(100), nullable=False)
+    file_key: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    file_name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     # draft | published
     status: Mapped[str] = mapped_column(
         String(20), nullable=False, default="draft", server_default="draft"
     )
+    published_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
+    published_by: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=True,
+    )
+    effective_date: Mapped[Optional[date]] = mapped_column(Date, nullable=True)
+    # none | running | done | failed
+    extraction_status: Mapped[str] = mapped_column(
+        String(20), nullable=False, default="none", server_default="none"
+    )
+    content_hash: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    extraction_log: Mapped[Optional[dict]] = mapped_column(JSONB, nullable=True)
+    notes: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_by: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
         ForeignKey("users.id", ondelete="RESTRICT"),
@@ -169,7 +187,9 @@ class AphVersion(TimestampMixin, Base):
 
     # Relationships
     creator: Mapped["User"] = relationship("User", foreign_keys=[created_by])
-    rules: Mapped[list["AphRule"]] = relationship("AphRule", back_populates="aph_version")
+    publisher: Mapped[Optional["User"]] = relationship("User", foreign_keys=[published_by])
+    rules: Mapped[list["AphRule"]] = relationship("AphRule", back_populates="aph_version", cascade="all, delete-orphan")
+    pages: Mapped[list["AphPage"]] = relationship("AphPage", back_populates="aph_version", cascade="all, delete-orphan")
     applications: Mapped[list["Application"]] = relationship(
         "Application", back_populates="aph_version"
     )
@@ -179,10 +199,39 @@ class AphVersion(TimestampMixin, Base):
 
 
 # ---------------------------------------------------------------------------
-# 6. AphRule  (stub — extended in Module 2)
+# 5b. AphPage (new in Module 1)
+# ---------------------------------------------------------------------------
+class AphPage(TimestampMixin, Base):
+    __tablename__ = "aph_pages"
+
+    __table_args__ = (
+        UniqueConstraint("version_id", "page_no", name="uq_aph_pages_version_page"),
+    )
+
+    version_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("aph_versions.id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    page_no: Mapped[int] = mapped_column(Integer, nullable=False)
+    text: Mapped[str] = mapped_column(Text, nullable=False)
+
+    # Relationships
+    aph_version: Mapped["AphVersion"] = relationship("AphVersion", back_populates="pages")
+
+    def __repr__(self) -> str:
+        return f"<AphPage v={self.version_id} p={self.page_no}>"
+
+
+# ---------------------------------------------------------------------------
+# 6. AphRule  (extended in Module 1)
 # ---------------------------------------------------------------------------
 class AphRule(TimestampMixin, Base):
     __tablename__ = "aph_rules"
+
+    __table_args__ = (
+        UniqueConstraint("aph_version_id", "programme_key", "parameter_key", name="uq_aph_rules_version_prog_param"),
+    )
 
     aph_version_id: Mapped[uuid.UUID] = mapped_column(
         UUID(as_uuid=True),
@@ -190,21 +239,33 @@ class AphRule(TimestampMixin, Base):
         nullable=False,
     )
     programme: Mapped[str] = mapped_column(String(255), nullable=False)
+    programme_key: Mapped[str] = mapped_column(Text, nullable=False)
     category: Mapped[str] = mapped_column(String(255), nullable=False)
     parameter: Mapped[str] = mapped_column(String(255), nullable=False)
+    parameter_key: Mapped[str] = mapped_column(Text, nullable=False)
     operator: Mapped[str] = mapped_column(String(20), nullable=False)
-    value: Mapped[str] = mapped_column(String(255), nullable=False)
+    string_value: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    numeric_value: Mapped[Optional[float]] = mapped_column(Numeric, nullable=True)
     unit: Mapped[Optional[str]] = mapped_column(String(50), nullable=True)
     source_page: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    source_quote: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    needs_review: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False, server_default=func.false())
+    is_ai_suggested: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True, server_default=func.true())
+    edited_by: Mapped[Optional[uuid.UUID]] = mapped_column(
+        UUID(as_uuid=True),
+        ForeignKey("users.id", ondelete="RESTRICT"),
+        nullable=True,
+    )
+    edited_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
     # Relationships
     aph_version: Mapped["AphVersion"] = relationship(
         "AphVersion", back_populates="rules"
     )
+    editor: Mapped[Optional["User"]] = relationship("User", foreign_keys=[edited_by])
 
     def __repr__(self) -> str:
-        return f"<AphRule {self.parameter!r}>"
-
+        return f"<AphRule {self.parameter_key!r}>"
 
 # ---------------------------------------------------------------------------
 # 7. InfrastructureRecord  (stub — extended in Module 3)

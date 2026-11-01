@@ -16,3 +16,9 @@ argon2-cffi
 httpx
 pytest
 python-dotenv
+
+# Module 1 dependencies
+PyMuPDF
+boto3
+google-genai
+python-multipart

@@ -1,0 +1,76 @@
+/* UX4G & GIGW Government Design Tokens for SanshthaSetu */
+:root {
+  /* UX4G Palette: Deep Government Blue #003087 (218 100% 26.5%), Saffron #F47920 (25 90% 54%), Surface #F5F5F5 (0 0% 96%), Text #212121 (0 0% 13%) */
+  --background: 0 0% 98%;
+  --foreground: 0 0% 13%;
+
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 13%;
+
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 13%;
+
+  /* Primary: Deep Government Blue #003087 */
+  --primary: 218 100% 26.5%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Secondary: Light grey surface #F5F5F5 */
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 13%;
+
+  --muted: 0 0% 94%;
+  --muted-foreground: 0 0% 40%;
+
+  /* Accent: National Saffron #F47920 */
+  --accent: 25 90% 54%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 0 0% 88%;
+  --input: 0 0% 88%;
+  --ring: 218 100% 26.5%;
+
+  --radius: 0.375rem;
+
+  /* Government Tricolor Accents */
+  --gov-saffron: 25 90% 54%;
+  --gov-green: 142 70% 30%;
+  --gov-blue: 218 100% 26.5%;
+}
+
+.dark {
+  --background: 220 20% 10%;
+  --foreground: 0 0% 95%;
+
+  --card: 220 20% 13%;
+  --card-foreground: 0 0% 95%;
+
+  --popover: 220 20% 13%;
+  --popover-foreground: 0 0% 95%;
+
+  --primary: 218 90% 45%;
+  --primary-foreground: 0 0% 100%;
+
+  --secondary: 220 15% 20%;
+  --secondary-foreground: 0 0% 95%;
+
+  --muted: 220 15% 18%;
+  --muted-foreground: 220 10% 65%;
+
+  --accent: 25 90% 54%;
+  --accent-foreground: 0 0% 100%;
+
+  --destructive: 0 70% 50%;
+  --destructive-foreground: 0 0% 100%;
+
+  --border: 220 15% 22%;
+  --input: 220 15% 22%;
+  --ring: 218 90% 45%;
+
+  --gov-saffron: 25 90% 54%;
+  --gov-green: 142 70% 35%;
+  --gov-blue: 218 90% 45%;
+}
+

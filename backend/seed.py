@@ -1,5 +1,5 @@
-"""
-seed.py — Create demo data for SanshthaSetu.
+﻿"""
+seed.py - Create demo data for SanshthaSetu.
 
 Run from the backend/ directory after `alembic upgrade head`:
     python seed.py
@@ -7,15 +7,15 @@ Run from the backend/ directory after `alembic upgrade head`:
 Requires DATABASE_URL in the environment (or a .env file in backend/).
 
 What it creates
-───────────────
+---------------
   3 institutions (one per region)
   8 users (3 college_admin + 1 per remaining role)
 
-Roles and workflow_stages are NOT created here — they are inserted by the
+Roles and workflow_stages are NOT created here - they are inserted by the
 Alembic migration (0001_initial_schema) and must already exist.
 
 Idempotency
-───────────
+-----------
 Every INSERT uses ON CONFLICT ... DO NOTHING via SQLAlchemy merge logic:
 if a row with the same unique key already exists it is skipped.
 Running this script twice produces no duplicates.
@@ -154,7 +154,7 @@ def seed() -> None:
         if not role_rows:
             print(
                 "ERROR: No roles found in the database.\n"
-                "       Run 'alembic upgrade head' first — roles are seeded by the migration.",
+                "       Run 'alembic upgrade head' first - roles are seeded by the migration.",
                 file=sys.stderr,
             )
             sys.exit(1)
@@ -171,7 +171,7 @@ def seed() -> None:
         users: list[User] = []
         for email, role_name, region, inst_name in _USERS:
             if role_name not in roles:
-                print(f"WARNING: role '{role_name}' not found — skipping {email}", file=sys.stderr)
+                print(f"WARNING: role '{role_name}' not found - skipping {email}", file=sys.stderr)
                 continue
             institution = institutions.get(inst_name) if inst_name else None
             user = _upsert_user(db, email, roles[role_name], institution, region)
@@ -186,15 +186,15 @@ def seed() -> None:
 def _print_summary() -> None:
     col_w = 45
     print()
-    print("─" * 60)
-    print("  Seed complete — demo credentials")
-    print("─" * 60)
+    print("-" * 60)
+    print("  Seed complete - demo credentials")
+    print("-" * 60)
     header = f"  {'Email':<{col_w}}  Password"
     print(header)
-    print("  " + "─" * (len(header) - 2))
+    print("  " + "-" * (len(header) - 2))
     for email, *_ in _USERS:
         print(f"  {email:<{col_w}}  {_PASSWORD}")
-    print("─" * 60)
+    print("-" * 60)
     print()
 
 

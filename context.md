@@ -126,6 +126,19 @@ seed.py    creates demo data
 - Deployed and working on the hosted URLs
 - Committed with a clear message
 
+## 14. Specs Index
+
+| Document | Purpose |
+|---|---|
+| `context.md` | Single source of truth — product, roles, stack, data model, coding rules (this file) |
+| `docs/engineering-rules.md` | Checkable rules for every AI tool (API, permissions, audit, DB, AI, free-tier, testing, git) |
+| `docs/module-0/` | Foundation — auth, RBAC, DB schema, seed, deployment |
+| `docs/module-0.5/` | UI theme pass — UX4G government look, shared AppShell, accessibility baseline |
+| `docs/module-1/` | APH pipeline — PDF upload, Gemini extraction, admin review/edit/publish, versioning |
+| `docs/module-2/` | Readiness assessment — infrastructure entry, comparison against published rules, gap report |
+
+---
+
 ## 13. Current status
 
 (Update at the end of every working session: what works, what is broken, what is next.)

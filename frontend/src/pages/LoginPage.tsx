@@ -1,15 +1,8 @@
 /**
- * LoginPage
- *
- * - Accepts email + password
- * - Calls POST /auth/login via apiClient
- * - On success: stores credentials in Zustand, navigates to role portal
- * - On failure: displays the API error message in a destructive Alert
- * - Loading state: button disabled + "Signing in…" label while request is in flight
+ * LoginPage — Clean, modern authentication screen for SanshthaSetu.
  */
 
 import { useState } from 'react'
-import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import type { AxiosError } from 'axios'
 
@@ -19,10 +12,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
 
 interface LoginResponse {
   access_token: string
@@ -34,14 +23,6 @@ interface ApiErrorBody {
   detail: string
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Decode a JWT payload without verifying the signature.
- * Used client-side only to extract sub (userId) and email after login.
- */
 function decodeJwtPayload(token: string): Record<string, unknown> {
   try {
     const base64 = token.split('.')[1]
@@ -51,10 +32,6 @@ function decodeJwtPayload(token: string): Record<string, unknown> {
     return {}
   }
 }
-
-// ---------------------------------------------------------------------------
-// Component
-// ---------------------------------------------------------------------------
 
 export default function LoginPage() {
   const navigate = useNavigate()
@@ -76,14 +53,12 @@ export default function LoginPage() {
         password,
       })
 
-      // Decode userId and email from the JWT payload (no server round-trip needed).
       const payload = decodeJwtPayload(data.access_token)
       const userId = (payload.sub as string | undefined) ?? ''
       const userEmail = (payload.email as string | undefined) ?? email
 
       setAuth(data.access_token, data.role, userId, userEmail)
 
-      // Redirect to the role-appropriate portal.
       const destination = ROLE_PORTAL[data.role] ?? '/login'
       navigate(destination, { replace: true })
     } catch (err) {
@@ -98,69 +73,104 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm space-y-6">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-accent selection:text-accent-foreground">
+      {/* Top Accent Stripe */}
+      <div className="h-1 w-full bg-primary" />
 
-        {/* Heading */}
-        <div className="space-y-1 text-center">
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            SanshthaSetu
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            AICTE Approval Workflow Platform
-          </p>
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-6">
+          {/* Platform Branding Header */}
+          <div className="space-y-3 text-center">
+            <div className="inline-flex h-12 w-12 rounded-lg bg-primary text-primary-foreground items-center justify-center font-bold text-xl shadow-sm">
+              SS
+            </div>
+
+            <div>
+              <h1 className="font-extrabold text-2xl text-foreground tracking-tight">
+                SanshthaSetu
+              </h1>
+              <p className="text-xs text-muted-foreground font-medium mt-1">
+                Approval Workflow Automation & Compliance Monitoring Platform
+              </p>
+            </div>
+          </div>
+
+          {/* Form Card */}
+          <div className="bg-card border border-border rounded-lg shadow-sm p-6 sm:p-8 space-y-5">
+            <div className="border-b border-border pb-3">
+              <h2 className="text-lg font-bold text-foreground">Sign In to Your Account</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Institution Representatives & Administrative Users
+              </p>
+            </div>
+
+            {error && (
+              <Alert variant="destructive" role="alert">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+
+            <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              <div className="space-y-1.5">
+                <Label htmlFor="email" className="text-xs font-semibold text-foreground">
+                  Email Address
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="name@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  aria-required="true"
+                  className="bg-background"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-xs font-semibold text-foreground">
+                    Password
+                  </Label>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  aria-required="true"
+                  className="bg-background"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full font-semibold cursor-pointer"
+                disabled={loading || !email || !password}
+                aria-busy={loading}
+              >
+                {loading ? 'Authenticating…' : 'Sign In'}
+              </Button>
+            </form>
+          </div>
+
+          {/* Demonstration Notice */}
+          <div className="text-center text-xs text-muted-foreground space-y-1">
+            <p>Smart India Hackathon 2026 Prototype (Team Port2Code)</p>
+            <p className="text-muted-foreground/80">Role-Based Access Control</p>
+          </div>
         </div>
-
-        {/* Error alert */}
-        {error && (
-          <Alert variant="destructive" role="alert">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-
-        {/* Login form */}
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-          <div className="space-y-1">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={loading}
-              aria-required="true"
-            />
-          </div>
-
-          <div className="space-y-1">
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={loading}
-              aria-required="true"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={loading || !email || !password}
-            aria-busy={loading}
-          >
-            {loading ? 'Signing in…' : 'Sign in'}
-          </Button>
-        </form>
-
       </div>
+
+      <footer className="border-t border-border py-3 text-center text-xs text-muted-foreground">
+        SanshthaSetu Platform — Prototype
+      </footer>
     </div>
   )
 }

@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Optional
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -17,21 +18,28 @@ class Settings(BaseSettings):
     )
 
     # ── Database ────────────────────────────────────────────────────────────
-    # Must start with "postgresql" and include ?sslmode=require for Neon.
     database_url: str
 
     # ── JWT ─────────────────────────────────────────────────────────────────
-    # Minimum 32 characters; used as the HS256 signing secret.
     jwt_secret: str
     jwt_expire_hours: int = 24
 
     # ── CORS ────────────────────────────────────────────────────────────────
-    # Stored as a plain string; use cors_origins_list for the parsed list.
-    # Example: "http://localhost:5173,https://your-app.vercel.app"
     cors_origins: str = "http://localhost:5173"
 
     # ── App ──────────────────────────────────────────────────────────────────
     environment: str = "development"
+
+    # ── Storage (S3-compatible: Neon Object Storage / Cloudflare R2) ────────
+    aws_access_key_id: Optional[str] = None
+    aws_secret_access_key: Optional[str] = None
+    aws_endpoint_url_s3: Optional[str] = None
+    aws_region: str = "ap-southeast-1"
+    neon_storage_bucket: str = "assets"
+
+    # ── Gemini AI ───────────────────────────────────────────────────────────
+    gemini_api_key: Optional[str] = None
+    gemini_model: str = "gemini-2.5-flash"
 
     # ── Derived properties ───────────────────────────────────────────────────
 
@@ -54,11 +62,6 @@ class Settings(BaseSettings):
             raise ValueError(
                 f"JWT_SECRET must be at least 32 characters (got {len(self.jwt_secret)})"
             )
-
-
-# Module-level singleton — imported everywhere that needs settings.
-# Uses lru_cache so the .env file is read exactly once per process,
-# and tests can call get_settings.cache_clear() to reload with different env vars.
 
 
 @lru_cache(maxsize=1)

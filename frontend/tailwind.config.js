@@ -1,2 +1,58 @@
-/** @type {import(chr(39))} */
-export default {darkMode:[chr(39)class chr(39)],content:[chr(39)./index.html chr(39),chr(39)./src/**/*.{ts,tsx,js,jsx} chr(39)],theme:{extend:{colors:{border:chr(39)hsl(var(--border)) chr(39),input:chr(39)hsl(var(--input)) chr(39),ring:chr(39)hsl(var(--ring)) chr(39),background:chr(39)hsl(var(--background)) chr(39),foreground:chr(39)hsl(var(--foreground)) chr(39)}}},plugins:[]}
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: ["class"],
+  content: [
+    "./index.html",
+    "./src/**/*.{ts,tsx,js,jsx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        gov: {
+          saffron: "hsl(var(--gov-saffron))",
+          green: "hsl(var(--gov-green))",
+          blue: "hsl(var(--gov-blue))",
+        },
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+    },
+  },
+  plugins: [],
+}

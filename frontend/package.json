@@ -31,7 +31,7 @@
     "@vitejs/plugin-react": "latest",
     "autoprefixer": "latest",
     "postcss": "latest",
-    "tailwindcss": "^4.3.3",
+    "tailwindcss": "^3.4.19",
     "typescript": "latest",
     "vite": "latest"
   }

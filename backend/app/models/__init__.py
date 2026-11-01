@@ -7,6 +7,7 @@ Usage:
 
 from app.models.all_models import (  # noqa: F401
     Alert,
+    AphPage,
     AphRule,
     AphVersion,
     Application,
